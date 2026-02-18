@@ -1,0 +1,9 @@
+src/
+pdf-highlighter-demo/
+tests/
+.storybook/
+.github/
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
