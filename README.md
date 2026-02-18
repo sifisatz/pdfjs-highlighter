@@ -46,10 +46,18 @@ export function App() {
 - **Ref API** — `goToPage`, `goToHighlight`, `goToLinkedField` for programmatic control
 - **TypeScript** — Typed props, ref, and highlight model
 
+## Demo
+
+The [pdf-highlighter-demo](https://github.com/sifisatz/pdfjs-highlighter/tree/main/pdf-highlighter-demo) app in this repo shows a discrepancy-review UI: side-by-side PDF viewers (Instruction vs Confirmation) with highlights and form fields linked via `linkedFieldId`. Run it with `npm run dev` from the `pdf-highlighter-demo` folder.
+
+![Discrepancy review demo — Fields to Review panel and side-by-side Instruction / Confirmation PDF viewers with highlights](docs/demo-screenshot.png)
+
 ## Table of contents
 
 - [Install](#install)
 - [Quick start](#quick-start)
+- [Demo](#demo)
+- [Features](#features)
 - [Props and API](#props-and-api)
 - [Highlights](#highlights)
 - [Zoom and navigation](#zoom-and-navigation)
