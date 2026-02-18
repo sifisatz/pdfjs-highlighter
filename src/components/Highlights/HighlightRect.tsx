@@ -33,7 +33,7 @@ export function HighlightRect({
     cursor: isClickable ? "pointer" : "default",
     pointerEvents: "auto",
     boxShadow: isFocused ? "0 0 0 2px rgba(59, 130, 246, 0.8)" : undefined,
-    animation: isFocused ? "pdf-highlighter-viewer-pulse 1.5s ease-in-out 2" : undefined,
+    animation: isFocused ? "pdfjs-highlighter-pulse 1.5s ease-in-out 2" : undefined,
   };
 
   const tooltip = renderTooltip?.(highlight);
@@ -41,9 +41,9 @@ export function HighlightRect({
   return (
     <div
       ref={setRef}
-      data-testid="pdf-highlighter-viewer-highlight"
+      data-testid="pdfjs-highlighter-highlight"
       data-highlight-id={highlight.id}
-      className={isFocused ? "pdf-highlighter-viewer-highlight--focused" : undefined}
+      className={isFocused ? "pdfjs-highlighter-highlight--focused" : undefined}
       style={style}
       onClick={onHighlightClick}
     >

@@ -2,13 +2,13 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import { resolve } from "node:path";
 
-// Vite library build for pdf-highlighter-viewer
+// Vite library build for pdfjs-highlighter
 export default defineConfig({
   plugins: [react()],
   build: {
     lib: {
       entry: resolve(__dirname, "src/index.ts"),
-      name: "PdfHighlighterViewer",
+      name: "PdfJsHighlighter",
       formats: ["es", "cjs"],
       fileName: (format) => (format === "es" ? "index.esm" : "index.cjs"),
     },

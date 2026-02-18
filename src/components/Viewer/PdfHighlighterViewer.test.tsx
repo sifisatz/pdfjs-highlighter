@@ -55,7 +55,7 @@ describe("PdfHighlighterViewer", () => {
       />,
     );
 
-    const highlightEl = await screen.findByTestId("pdf-highlighter-viewer-highlight");
+    const highlightEl = await screen.findByTestId("pdfjs-highlighter-highlight");
     fireEvent.click(highlightEl);
 
     expect(onLinkedFieldFocus).toHaveBeenCalledTimes(1);

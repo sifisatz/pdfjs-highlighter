@@ -1,9 +1,9 @@
-/* Base styles for pdf-highlighter-viewer.
+/* Base styles for pdfjs-highlighter.
  * Consumers can import this file via:
- *   import "pdf-highlighter-viewer/styles.css";
+ *   import "pdfjs-highlighter/styles.css";
  */
 
-.pdf-highlighter-viewer-root {
+.pdfjs-highlighter-root {
   display: flex;
   flex-direction: column;
   border: 1px solid #e5e7eb;
@@ -12,12 +12,12 @@
   background: #ffffff;
 }
 
-.pdf-highlighter-viewer-highlight--focused {
+.pdfjs-highlighter-highlight--focused {
   /* visual focus ring around the active highlight */
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.8);
 }
 
-.pdf-highlighter-viewer-linked-field-focus {
+.pdfjs-highlighter-linked-field-focus {
   outline: 2px solid rgba(59, 130, 246, 0.8);
   outline-offset: 2px;
 }

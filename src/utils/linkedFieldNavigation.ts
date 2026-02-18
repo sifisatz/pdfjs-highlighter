@@ -1,6 +1,6 @@
 import type { Highlight } from "../types/Highlight.js";
 
-export const DEFAULT_FOCUS_CLASS = "pdf-highlighter-viewer-linked-field-focus";
+export const DEFAULT_FOCUS_CLASS = "pdfjs-highlighter-linked-field-focus";
 const DEFAULT_FOCUS_DURATION_MS = 2000;
 
 export type LinkedFieldNavigationOptions = {

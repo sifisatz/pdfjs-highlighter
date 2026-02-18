@@ -164,18 +164,18 @@ export const PdfHighlighterViewer = forwardRef<PdfViewerRef, PdfHighlighterViewe
     return (
       <>
         <style>{`
-          @keyframes pdf-highlighter-viewer-pulse {
+          @keyframes pdfjs-highlighter-pulse {
             0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5); }
             50% { box-shadow: 0 0 0 6px rgba(59, 130, 246, 0); }
           }
-          @keyframes pdf-highlighter-viewer-linked-field-pulse {
+          @keyframes pdfjs-highlighter-linked-field-pulse {
             0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); outline-color: rgba(59, 130, 246, 0.8); }
             50% { box-shadow: 0 0 0 6px rgba(59, 130, 246, 0); outline-color: rgba(59, 130, 246, 0.5); }
           }
-          .pdf-highlighter-viewer-linked-field-focus {
+          .pdfjs-highlighter-linked-field-focus {
             outline: 2px solid rgba(59, 130, 246, 0.8);
             outline-offset: 2px;
-            animation: pdf-highlighter-viewer-linked-field-pulse 2s ease-in-out;
+            animation: pdfjs-highlighter-linked-field-pulse 2s ease-in-out;
           }
         `}</style>
         <div

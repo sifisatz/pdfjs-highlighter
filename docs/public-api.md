@@ -14,7 +14,7 @@ React component that renders a PDF with an optional toolbar and rectangle highli
 - Zoom controls in the toolbar and via Ctrl + mouse wheel.
 
 ```tsx
-import { PdfHighlighterViewer } from "@local/pdf-highlighter-viewer";
+import { PdfHighlighterViewer } from "pdfjs-highlighter";
 
 <PdfHighlighterViewer
   ref={viewerRef}
@@ -62,7 +62,7 @@ import { PdfHighlighterViewer } from "@local/pdf-highlighter-viewer";
 
 ## Types
 
-Export path: `@local/pdf-highlighter-viewer` (or your package name).
+Export path: `pdfjs-highlighter` (npm package name).
 
 - **Highlight** – `id`, `page`, `x`, `y`, `width`, `height`, `color?`, `opacity?`, `coordinateSpace?`, `data?`, `linkedFieldId?`
 - **HighlightCoordinateSpace** – `"pdf" | "percent"`

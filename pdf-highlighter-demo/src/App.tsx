@@ -23,7 +23,7 @@ export function HomePage() {
   return (
     <div className="HomePage">
       <div className="HomeCard">
-        <h1>PDF Highlighter Viewer</h1>
+        <h1>pdfjs-highlighter</h1>
         <p>
           This demo showcases a React + TypeScript PDF viewer library with
           rectangle highlights, zoom controls, navigation, and download support.

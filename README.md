@@ -1,43 +1,33 @@
-## PDF Highlighter Viewer
+# pdfjs-highlighter
 
-**React + TypeScript PDF viewer library with rectangle highlights.**
+[![npm version](https://img.shields.io/npm/v/pdfjs-highlighter.svg)](https://www.npmjs.com/package/pdfjs-highlighter)
+[![npm license](https://img.shields.io/npm/l/pdfjs-highlighter.svg)](https://www.npmjs.com/package/pdfjs-highlighter)
 
-The library is refactored into a modular structure (see `docs/architecture.md`). The **public API is unchanged**: same component name, same props, same ref. Existing code using `PdfHighlighterViewer` and the exported types does not need changes.
+A React PDF viewer with rectangle highlights, zoom, page navigation, and optional link-to-form-field navigation. Built on PDF.js with full TypeScript support.
 
-### 1. Installation
+## Install
 
 ```bash
 npm install pdfjs-highlighter pdfjs-dist react react-dom
 ```
 
-### 2. Basic Usage
+**Peer dependencies:** `react` (^18 or ^19), `react-dom`, `pdfjs-dist` — install them in your app if not already present.
+
+## Quick start
 
 ```tsx
-import React from "react";
 import { PdfHighlighterViewer, Highlight } from "pdfjs-highlighter";
 
 const highlights: Highlight[] = [
-  {
-    id: "h1",
-    page: 1,
-    x: 0.1,
-    y: 0.2,
-    width: 0.3,
-    height: 0.1,
-    color: "#f97316",
-    opacity: 0.4,
-    coordinateSpace: "percent",
-  },
+  { id: "h1", page: 1, x: 0.1, y: 0.2, width: 0.3, height: 0.1, coordinateSpace: "percent" },
 ];
 
-export function Example() {
+export function App() {
   return (
     <div style={{ height: 600 }}>
       <PdfHighlighterViewer
-        source={{ type: "url", url: "/example.pdf" }}
+        source={{ type: "url", url: "/document.pdf" }}
         highlights={highlights}
-        initialPage={1}
-        zoomStep={0.2}
         toolbar
       />
     </div>
@@ -45,138 +35,127 @@ export function Example() {
 }
 ```
 
-### 3. Highlight Coordinate Mapping
+## Features
 
-- **Percent space (`coordinateSpace: "percent"`)**
-  - `x`, `width` are relative to page width (0–1).
-  - `y`, `height` are relative to page height (0–1) with **top = 0**.
-- **PDF space (`coordinateSpace: "pdf"`)**
-  - `x`, `y`, `width`, `height` are in PDF points.
-  - Origin is **bottom-left**; the library converts to canvas coordinates and flips the Y‑axis.
-- Highlights are recomputed whenever the zoom or container size changes, so they always stay aligned.
+- **PDF rendering** — URL, `ArrayBuffer`, or base64 source
+- **Rectangle highlights** — Percent or PDF coordinate space; per-highlight color and opacity
+- **Zoom** — Toolbar controls and Ctrl + mouse wheel (configurable)
+- **Page navigation** — Prev/next, go to page, optional custom toolbar
+- **Highlight navigation** — Click a highlight to scroll into view and focus it; optional zoom-on-focus
+- **Link to form fields** — Optional `linkedFieldId` to scroll to and focus a DOM element (e.g. input) when a highlight is clicked
+- **Ref API** — `goToPage`, `goToHighlight`, `goToLinkedField` for programmatic control
+- **TypeScript** — Typed props, ref, and highlight model
 
-### 4. API Overview
+## Table of contents
 
-```ts
-type HighlightCoordinateSpace = "pdf" | "percent";
+- [Install](#install)
+- [Quick start](#quick-start)
+- [Props and API](#props-and-api)
+- [Highlights](#highlights)
+- [Zoom and navigation](#zoom-and-navigation)
+- [Ref API](#ref-api)
+- [Linking highlights to form fields](#linking-highlights-to-form-fields)
+- [Custom toolbar](#custom-toolbar)
+- [Styling](#styling)
+- [License](#license)
 
-type Highlight = {
-  id: string;
-  page: number;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  color?: string;
-  opacity?: number;
-  coordinateSpace?: HighlightCoordinateSpace; // default: "percent"
-  data?: unknown;
-  linkedFieldId?: string; // optional: id of DOM element to scroll/focus when highlight is clicked (requires enableFieldNavigation)
-};
+## Props and API
 
-type PdfFileSource =
-  | { type: "url"; url: string }
-  | { type: "data"; data: ArrayBuffer | Uint8Array }
-  | { type: "base64"; base64: string };
+### Component: `PdfHighlighterViewer`
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `source` | `PdfFileSource` | required | `{ type: "url", url }` or `{ type: "data", data }` or `{ type: "base64", base64 }` |
+| `highlights` | `Highlight[]` | `[]` | Rectangle highlights to overlay |
+| `initialPage` | `number` | `1` | First page to show |
+| `initialZoom` | `number` | `1` | Initial zoom level |
+| `zoomStep` | `number` | `0.2` | Zoom in/out step |
+| `minZoom` | `number` | `0.5` | Minimum zoom |
+| `maxZoom` | `number` | `3` | Maximum zoom |
+| `toolbar` | `boolean` | `true` | Show built-in toolbar |
+| `showZoomControls` | `boolean` | `true` | Show zoom buttons and reset in toolbar |
+| `enableHighlightNavigation` | `boolean` | `true` | Click highlight to go to page and scroll to it |
+| `highlightScrollBehavior` | `"smooth" \| "auto"` | `"smooth"` | Scroll behavior when focusing a highlight |
+| `highlightFocusZoom` | `number` | — | Optional zoom level when focusing a highlight |
+| `enableCtrlWheelZoom` | `boolean` | `true` | Ctrl + wheel zooms the viewer |
+| `enableFieldNavigation` | `boolean` | `false` | Click highlight with `linkedFieldId` scrolls to and focuses that DOM element |
+| `onHighlightClick` | `(highlight: Highlight) => void` | — | Called on every highlight click |
+| `onLinkedFieldFocus` | `(highlight, element \| null) => void` | — | Called after navigating to a linked field |
+| `linkedFieldFocusClassName` | `string` | — | CSS class for linked-field focus effect (override default) |
+| `renderHighlightTooltip` | `(highlight) => ReactNode` | — | Custom tooltip for highlights |
+| `renderToolbar` | `(props) => ReactNode` | — | Custom toolbar (replaces default) |
+| `className` | `string` | — | Root element class |
+| `style` | `React.CSSProperties` | — | Root element style |
+
+### Ref: `PdfViewerRef`
+
+- `goToPage(page: number)` — Switch to page
+- `goToHighlight(highlightId: string)` — Go to page and scroll to highlight
+- `goToLinkedField(highlightId: string)` — Scroll to and focus the linked DOM element (if highlight has `linkedFieldId`)
+
+### Types
+
+- **`Highlight`** — `id`, `page`, `x`, `y`, `width`, `height`, `color?`, `opacity?`, `coordinateSpace?` (`"percent"` \| `"pdf"`), `data?`, `linkedFieldId?`
+- **`PdfFileSource`** — `{ type: "url", url }` \| `{ type: "data", data }` \| `{ type: "base64", base64 }`
+
+## Highlights
+
+Highlights are rectangles overlaid on the PDF. Use **percent** (0–1, top-left origin) or **PDF** (points, bottom-left origin).
+
+```tsx
+const highlights: Highlight[] = [
+  {
+    id: "total",
+    page: 1,
+    x: 0.1,
+    y: 0.35,
+    width: 0.8,
+    height: 0.06,
+    color: "#f97316",
+    opacity: 0.4,
+    coordinateSpace: "percent", // default
+  },
+];
 ```
 
-```ts
-type PdfViewerRef = {
-  goToPage: (page: number) => void;
-  goToHighlight: (highlightId: string) => void;
-  goToLinkedField: (highlightId: string) => void; // scroll to and focus linked form field, if highlight has linkedFieldId
-};
+With `enableHighlightNavigation` (default), clicking a highlight navigates to its page, scrolls it into view, and runs a short focus animation. Use `highlightFocusZoom` to set a zoom level when focusing.
 
-type PdfHighlighterViewerProps = {
-  source: PdfFileSource;
-  highlights?: Highlight[];
-  initialPage?: number;
-  zoomStep?: number;
-  minZoom?: number;
-  maxZoom?: number;
-  initialZoom?: number;
-  toolbar?: boolean;
-  renderToolbar?: (props: PdfHighlighterViewerToolbarProps) => React.ReactNode;
-  onHighlightClick?: (highlight: Highlight) => void;
-  renderHighlightTooltip?: (highlight: Highlight) => React.ReactNode;
-  enableHighlightNavigation?: boolean;  // default true: click navigates to page and scrolls to highlight
-  highlightScrollBehavior?: "smooth" | "auto";
-  highlightFocusZoom?: number;          // optional zoom when focusing a highlight
-  enableCtrlWheelZoom?: boolean;        // default true: Ctrl + wheel zooms (prevents browser zoom)
-  showZoomControls?: boolean;          // default true: show [ – ] 100% [ + ] Reset in toolbar
-  enableFieldNavigation?: boolean;      // default false: click highlight with linkedFieldId scrolls to and focuses the DOM element
-  onLinkedFieldFocus?: (highlight: Highlight, element: HTMLElement | null) => void;
-  linkedFieldFocusClassName?: string;   // CSS class for linked-field focus effect (default: built-in glow)
-  className?: string;
-  style?: React.CSSProperties;
-};
-```
+## Zoom and navigation
 
-### 5. Zoom controls
+- **Toolbar:** Page prev/next, page input, zoom in/out, reset zoom, download (if source allows).
+- **Ctrl + wheel:** Zooms over the viewer (when `enableCtrlWheelZoom` is true).
+- Zoom is shared between PDF canvas and highlight overlay so highlights stay aligned.
 
-- **Toolbar:** Zoom In (+), Zoom Out (–), current zoom %, Reset. Toggle with `showZoomControls`.
-- **Ctrl + mouse wheel:** When `enableCtrlWheelZoom` is true (default), zoom in/out with Ctrl + wheel over the viewer; browser page zoom is prevented.
-- **Shared scale:** The PDF canvas and highlight overlay use the same viewport scale (`zoom`), so highlights stay aligned at any zoom level (no separate coordinate recalculation).
-- **Limits:** `minZoom` (default 0.5), `maxZoom` (default 3), `zoomStep` (default 0.2).
-
-### 6. Highlight navigation, focus, and ref API
-
-With `enableHighlightNavigation` (default `true`), clicking a highlight:
-
-- Navigates to its page (if needed).
-- Scrolls it into view (`highlightScrollBehavior`: `"smooth"` \| `"auto"`).
-- Optionally zooms to a specific level (`highlightFocusZoom`).
-- Triggers a short focus animation on the active highlight to make it visually stand out.
-
-The same behavior is used when you call `goToHighlight` via the ref.
-
-**Highlight → form field navigation (opt-in):** Set `enableFieldNavigation={true}` and add `linkedFieldId` to highlights that should scroll to and focus a form field (e.g. `id="transaction-value-doc1"`). When the user clicks such a highlight, the viewer scrolls the linked element into view, focuses it, and applies a short focus effect (glow). Use `linkedFieldFocusClassName` to override the effect style and `onLinkedFieldFocus` to react (e.g. announce to screen readers). Ref method `goToLinkedField(highlightId)` does the same programmatically. If the element is missing, the library fails silently and existing highlight behavior is unchanged.
-
-Use a ref to control the viewer from outside:
+## Ref API
 
 ```tsx
 import { useRef } from "react";
 import { PdfHighlighterViewer, PdfViewerRef } from "pdfjs-highlighter";
 
-function Example() {
-  const viewerRef = useRef<PdfViewerRef>(null);
+function Viewer() {
+  const ref = useRef<PdfViewerRef>(null);
 
   return (
     <>
-      <button onClick={() => viewerRef.current?.goToPage(2)}>Go to page 2</button>
-      <button onClick={() => viewerRef.current?.goToHighlight("h1")}>Go to highlight</button>
-      <button onClick={() => viewerRef.current?.goToLinkedField("h1")}>Go to linked field</button>
+      <button onClick={() => ref.current?.goToPage(2)}>Page 2</button>
+      <button onClick={() => ref.current?.goToHighlight("total")}>Go to highlight</button>
+      <button onClick={() => ref.current?.goToLinkedField("total")}>Go to field</button>
       <PdfHighlighterViewer
-        ref={viewerRef}
-        source={{ type: "url", url: "/sample.pdf" }}
+        ref={ref}
+        source={{ type: "url", url: "/doc.pdf" }}
         highlights={highlights}
-        enableHighlightNavigation
-        highlightScrollBehavior="smooth"
-        highlightFocusZoom={1.2}
-        onHighlightClick={(h) => {
-          // Called on every highlight click, regardless of navigation settings.
-          console.log("Clicked", h.id, "on page", h.page);
-        }}
       />
     </>
   );
 }
 ```
 
-### 7. Zoom, mouse wheel, and scroll behavior
+## Linking highlights to form fields
 
-- **Zoom step:** Controlled via `zoomStep` (default `0.2`).
-- **Zoom limits:** `minZoom` and `maxZoom` (defaults `0.5` and `3`).
-- **Toolbar zoom controls:** Shown when `showZoomControls` is `true` (default).
-- **Ctrl + wheel zoom:** When `enableCtrlWheelZoom` is `true` (default), Ctrl + mouse wheel zooms the PDF and keeps browser page zoom unchanged.
-- **Highlight scrolling:** `highlightScrollBehavior` selects whether focusing a highlight uses smooth scrolling or instant jump.
-
-### 8. Highlight → form field linking (opt-in)
-
-When `enableFieldNavigation` is `true`, highlights with optional `linkedFieldId` link to a DOM element by `id`. Clicking the highlight (or calling `goToLinkedField(highlightId)`) scrolls that element into view, focuses it, and applies a ~2s focus effect. Use for discrepancy review UIs (e.g. “Transaction value” highlight → input field).
+When `enableFieldNavigation` is true, a highlight can have `linkedFieldId` set to the `id` of a DOM element (e.g. an input). Clicking that highlight (or calling `goToLinkedField(id)`) scrolls the element into view, focuses it, and applies a short focus effect.
 
 ```tsx
-const highlights = [
+const highlights: Highlight[] = [
   {
     id: "h1",
     page: 1,
@@ -185,14 +164,14 @@ const highlights = [
     width: 0.84,
     height: 0.055,
     coordinateSpace: "percent",
-    linkedFieldId: "transaction-value-doc1",
+    linkedFieldId: "transaction-value",
   },
 ];
 
-<input id="transaction-value-doc1" placeholder="Enter value" />
+<input id="transaction-value" placeholder="Enter value" />
 
 <PdfHighlighterViewer
-  source={{ type: "url", url: "/sample.pdf" }}
+  source={{ type: "url", url: "/doc.pdf" }}
   highlights={highlights}
   enableFieldNavigation
   onLinkedFieldFocus={(highlight, element) => {
@@ -201,24 +180,23 @@ const highlights = [
 />
 ```
 
-- **Accessibility:** Focus moves to the linked field; use `onLinkedFieldFocus` to update an ARIA live region or `aria-describedby` so screen readers announce the context.
-- **Backward compatibility:** If `linkedFieldId` is omitted or the element is not found, behavior is unchanged (no errors).
+If the element is missing, the library does nothing (no error). Use `linkedFieldFocusClassName` to style the focus effect or `onLinkedFieldFocus` for accessibility (e.g. live region).
 
-### 9. Custom Toolbar
+## Custom toolbar
+
+Replace the default toolbar with `renderToolbar`:
 
 ```tsx
 import { PdfHighlighterViewer, PdfHighlighterViewerToolbarProps } from "pdfjs-highlighter";
 
-function MyToolbar(props: PdfHighlighterViewerToolbarProps) {
+function CustomToolbar(props: PdfHighlighterViewerToolbarProps) {
   const { page, pageCount, onPrevPage, onNextPage, zoom, onZoomIn, onZoomOut, onDownload } = props;
   return (
-    <div>
+    <div className="my-toolbar">
       <button onClick={onPrevPage}>Prev</button>
-      <span>
-        {page} / {pageCount}
-      </span>
+      <span>{page} / {pageCount}</span>
       <button onClick={onNextPage}>Next</button>
-      <button onClick={onZoomOut}>-</button>
+      <button onClick={onZoomOut}>−</button>
       <span>{Math.round(zoom * 100)}%</span>
       <button onClick={onZoomIn}>+</button>
       <button onClick={onDownload}>Download</button>
@@ -226,47 +204,23 @@ function MyToolbar(props: PdfHighlighterViewerToolbarProps) {
   );
 }
 
-export function ExampleWithCustomToolbar() {
-  return (
-    <PdfHighlighterViewer
-      source={{ type: "url", url: "/example.pdf" }}
-      renderToolbar={(props) => <MyToolbar {...props} />}
-    />
-  );
-}
+<PdfHighlighterViewer
+  source={{ type: "url", url: "/doc.pdf" }}
+  renderToolbar={(p) => <CustomToolbar {...p} />}
+/>
 ```
 
-### 10. Testing
+## Styling
 
-```bash
-npm test          # watch
-npm run test:run  # single run
-npm run test:coverage
+- The root element accepts `className` and `style` (e.g. for Tailwind or dark mode).
+- Optional base styles (focus ring, linked-field effect) can be imported:
+
+```tsx
+import "pdfjs-highlighter/styles.css";
 ```
 
-See `docs/testing.md` for strategy and `docs/architecture.md` for structure.
+- Override the linked-field focus effect with `linkedFieldFocusClassName`.
 
-### 11. Styling Customization
+## License
 
-- The root element accepts `className` and `style` so you can:
-  - Integrate with Tailwind (e.g. `className="rounded-lg border shadow-sm"`).
-  - Apply custom themes or dark mode.
-- The default toolbar uses basic inline styles and buttons; override it with `renderToolbar` for a fully custom UI.
-- Highlights use an absolutely positioned overlay; customize `color` and `opacity` per highlight.
-
-### 12. Build & Publish
-
-- **Build the library**:
-
-```bash
-npm run build
-```
-
-- **Publish to npm**:
-
-```bash
-npm login
-npm publish
-```
-
-Ensure the `name` in `package.json` is unique on npm and points to this library.
+MIT · [GitHub](https://github.com/sifisatz/pdfjs-highlighter) · [npm](https://www.npmjs.com/package/pdfjs-highlighter)

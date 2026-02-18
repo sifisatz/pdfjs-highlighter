@@ -3,7 +3,7 @@ import {
   PdfHighlighterViewer,
   type Highlight,
   type PdfViewerRef,
-} from "@local/pdf-highlighter-viewer";
+} from "pdfjs-highlighter";
 import { DiscrepancyReviewPanel } from "../components/DiscrepancyReviewPanel.tsx";
 
 const baseInstructionHighlights: Highlight[] = [

@@ -3,7 +3,7 @@ import {
   PdfHighlighterViewer,
   type Highlight,
   type PdfViewerRef,
-} from "@local/pdf-highlighter-viewer";
+} from "pdfjs-highlighter";
 
 // Highlights for GRE Validity PDF (sldttc.org) – includes the chart/figure
 const percentHighlights: Highlight[] = [
@@ -130,7 +130,7 @@ export const PdfViewerDemo: React.FC = () => {
         }}
       >
         <div>
-          <h1 style={{ margin: 0, fontSize: 20 }}>PDF Highlighter Viewer Demo</h1>
+          <h1 style={{ margin: 0, fontSize: 20 }}>pdfjs-highlighter Demo</h1>
           <p style={{ margin: 0, fontSize: 13, opacity: 0.8 }}>
             Render PDFs, navigate pages, zoom, download, and visualize rectangle highlights.
           </p>

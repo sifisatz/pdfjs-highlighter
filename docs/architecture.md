@@ -2,7 +2,7 @@
 
 ## Overview
 
-The PDF Highlighter Viewer library is structured for separation of concerns, testability, and future features (e.g. virtualized pages, search).
+The pdfjs-highlighter library is structured for separation of concerns, testability, and future features (e.g. virtualized pages, search).
 
 ## Layers
 

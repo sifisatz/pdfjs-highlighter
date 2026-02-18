@@ -8,7 +8,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src"),
-      "@local/pdf-highlighter-viewer": path.resolve(__dirname, "../dist/index.js"),
+      "pdfjs-highlighter": path.resolve(__dirname, "../dist/index.js"),
     },
   },
   server: {
